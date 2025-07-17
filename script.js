@@ -1,0 +1,67 @@
+const chatbox = document.getElementById("chatbox");
+const userInput = document.getElementById("userInput");
+
+userInput.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        let question = userInput.value;
+        userInput.value = "";
+        appendMessage(question, "user");
+        getAnswer(question);
+    }
+});
+
+function appendMessage(message, sender) {
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", sender);
+    messageDiv.textContent = message;
+    chatbox.appendChild(messageDiv);
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+async function getAnswer(question) {
+    const symbol = extractStockSymbol(question); // Wyciąganie symbolu akcji
+    const period = extractTimePeriod(question); // Wyciąganie okresu (np. 2 tygodnie)
+
+    if (symbol && period) {
+        const data = await fetchStockData(symbol, period); // Pobranie danych o akcjach
+        const prediction = predictStockPrice(data); // Predykcja zmiany ceny
+        appendMessage(prediction, "bot");
+    } else {
+        appendMessage("Nie rozumiem pytania, spróbuj ponownie.", "bot");
+    }
+}
+
+function extractStockSymbol(question) {
+    const symbols = ["PKN Orlen", "CD Projekt", "KGHM", "Allegro", "LPP"]; // Lista przykładowych spółek
+    for (let symbol of symbols) {
+        if (question.toLowerCase().includes(symbol.toLowerCase())) {
+            return symbol;
+        }
+    }
+    return null;
+}
+
+function extractTimePeriod(question) {
+    const regex = /(\d+)\s*(tygodni|dni|miesięcy)/i;
+    const match = question.match(regex);
+    return match ? match[1] : null;
+}
+
+async function fetchStockData(symbol, period) {
+    const apiKey = 'YOUR_API_KEY'; // Twój klucz API z Alpha Vantage
+    const apiUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${apiKey}`;
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+    return data;
+}
+
+function predictStockPrice(data) {
+    if (data && data["Time Series (Daily)"]) {
+        const dates = Object.keys(data["Time Series (Daily)"]);
+        const latestPrice = parseFloat(data["Time Series (Daily)"][dates[0]]["4. close"]);
+        const prevPrice = parseFloat(data["Time Series (Daily)"][dates[1]]["4. close"]);
+        const change = (latestPrice - prevPrice) / prevPrice * 100;
+        return `Cena akcji zmieniła się o ${change.toFixed(2)}% w ostatnich dniach.`;
+    }
+    return "Nie mogę uzyskać danych dla tej spółki.";
+}
