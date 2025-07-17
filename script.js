@@ -19,8 +19,12 @@ function appendMessage(message, sender) {
 }
 
 async function getAnswer(question) {
+    console.log("Pytanie użytkownika: ", question); // Logowanie pytania
     const symbol = extractStockSymbol(question); // Wyciąganie symbolu akcji
     const period = extractTimePeriod(question); // Wyciąganie okresu (np. 2 tygodnie)
+    
+    console.log("Symbol akcji: ", symbol); // Logowanie symbolu akcji
+    console.log("Okres: ", period); // Logowanie okresu
 
     if (symbol && period) {
         const data = await fetchStockData(symbol, period); // Pobranie danych o akcjach
@@ -32,7 +36,7 @@ async function getAnswer(question) {
 }
 
 function extractStockSymbol(question) {
-    const symbols = ["PKN Orlen", "CD Projekt", "KGHM", "Allegro", "LPP"]; // Lista przykładowych spółek
+    const symbols = ["PKN Orlen", "CD Projekt", "KGHM", "Allegro", "LPP", "JSW", "PGE"]; // Lista spółek
     for (let symbol of symbols) {
         if (question.toLowerCase().includes(symbol.toLowerCase())) {
             return symbol;
@@ -61,7 +65,6 @@ async function fetchStockData(symbol, period) {
 
     return data;
 }
-
 
 function predictStockPrice(data) {
     if (data && data["Time Series (Daily)"]) {
