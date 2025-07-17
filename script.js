@@ -36,7 +36,9 @@ async function getAnswer(question) {
 }
 
 function extractStockSymbol(question) {
-    const symbols = ["PKN Orlen", "CD Projekt", "KGHM", "Allegro", "LPP", "JSW", "PGE"]; // Lista spółek
+    const symbols = [
+        "PKN Orlen", "CD Projekt", "KGHM", "Allegro", "LPP", "JSW", "PGE", "PKO BP", "Tauron", "Santander", "PZU"
+    ]; // Lista spółek
     for (let symbol of symbols) {
         if (question.toLowerCase().includes(symbol.toLowerCase())) {
             return symbol;
@@ -46,7 +48,7 @@ function extractStockSymbol(question) {
 }
 
 function extractTimePeriod(question) {
-    const regex = /(\d+)\s*(tygodni|dni|miesięcy)/i;
+    const regex = /(\d+)\s*(tygodni|dni|miesięcy|rok|miesiąc)/i; // Rozpoznawanie różnych jednostek czasu
     const match = question.match(regex);
     return match ? match[1] : null;
 }
