@@ -48,12 +48,20 @@ function extractTimePeriod(question) {
 }
 
 async function fetchStockData(symbol, period) {
-    const apiKey = 'YOUR_API_KEY'; // Twój klucz API z Alpha Vantage
+    const apiKey = 'DQW98VSE85U7W3QX'; // Twój klucz API
     const apiUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${apiKey}`;
+    
     const response = await fetch(apiUrl);
     const data = await response.json();
+
+    // Obsługa przypadku, gdy dane nie są dostępne
+    if (data['Error Message']) {
+        return "Błąd: nie można pobrać danych. Sprawdź symbol spółki.";
+    }
+
     return data;
 }
+
 
 function predictStockPrice(data) {
     if (data && data["Time Series (Daily)"]) {
